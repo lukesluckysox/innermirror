@@ -30,8 +30,8 @@ The app will open at `http://localhost:8501`.
 
 ### Pre-seeded Account
 A default test account is created on first run:
-- **Username:** tester
-- **Password:** tester123
+- **Username:** 
+- **Password:** 
 
 ## Deploy on Streamlit Community Cloud
 
