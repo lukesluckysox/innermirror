@@ -18,6 +18,70 @@ import math
 import db
 from analysis import analyze_text, extract_word_frequencies, STOP_WORDS
 
+# ── Emotion color mapping for word cloud ─────────────
+
+# Words associated with emotional categories and their standard colors
+EMOTION_WORD_MAP = {
+    "sadness": {"color": "#4A6FA5", "words": [
+        "sad", "sorrow", "grief", "loss", "tears", "cry", "weep", "mourn",
+        "pain", "hurt", "ache", "lonely", "alone", "empty", "hollow",
+        "broken", "lost", "miss", "gone", "fade", "wither", "drown",
+        "bleed", "wound", "scar", "dark", "darkness", "shadow", "grey",
+        "gray", "cold", "winter", "rain", "storm", "grave", "death",
+        "die", "dead", "end", "fall", "fallen", "despair", "hopeless",
+        "misery", "suffer", "agony", "melancholy", "gloom", "somber",
+        "heavy", "burden", "weight", "chains", "cage", "cages", "trap",
+        "prison", "bound", "blindness", "blind",
+    ]},
+    "anger": {"color": "#EB5757", "words": [
+        "anger", "angry", "rage", "fury", "hate", "hatred", "fight",
+        "war", "destroy", "burn", "fire", "blood", "kill", "violent",
+        "scream", "shout", "curse", "bitter", "resent", "spite",
+        "disgust", "revolt", "rebel", "defy", "crush", "smash",
+        "frustration", "frustrated", "injustice",
+    ]},
+    "fear": {"color": "#9B51E0", "words": [
+        "fear", "afraid", "scared", "terror", "dread", "panic",
+        "anxiety", "anxious", "worry", "nervous", "threat", "danger",
+        "risk", "hide", "flee", "run", "escape", "trapped", "haunted",
+        "ghost", "nightmare", "horror", "phobia", "paralyzed",
+        "obligations", "expectations",
+    ]},
+    "joy": {"color": "#F2C94C", "words": [
+        "joy", "happy", "happiness", "love", "laugh", "smile", "play",
+        "dance", "sing", "celebrate", "bright", "light", "sun", "warm",
+        "bloom", "flower", "spring", "free", "freedom", "peace",
+        "bliss", "delight", "pleasure", "wonder", "magic", "dream",
+        "hope", "wish", "stars", "beautiful", "beauty", "gentle",
+        "kind", "sweet", "tender", "embrace", "hold", "home",
+        "celebration", "innovation",
+    ]},
+    "love": {"color": "#E84393", "words": [
+        "love", "heart", "soul", "beloved", "darling", "dear",
+        "passion", "desire", "romance", "kiss", "touch", "caress",
+        "intimate", "devotion", "adore", "cherish", "bond",
+        "together", "forever", "connect", "connection",
+    ]},
+    "contemplation": {"color": "#52796f", "words": [
+        "think", "thought", "mind", "wonder", "question", "truth",
+        "wisdom", "intuition", "knowledge", "understand", "meaning",
+        "purpose", "exist", "existence", "life", "time", "memory",
+        "remember", "forget", "past", "future", "present", "eternity",
+        "infinite", "universe", "nature", "earth", "sky", "sea",
+        "ocean", "river", "mountain", "vision", "society", "world",
+        "living", "another", "eye", "status", "wages", "rapid",
+    ]},
+}
+
+def get_emotion_color(word):
+    """Return an emotion-based color for a word, or a neutral default."""
+    w = word.lower()
+    for emotion, data in EMOTION_WORD_MAP.items():
+        if w in data["words"]:
+            return data["color"]
+    # Neutral default — muted teal
+    return "#6b8f7e"
+
 # ── Page config ───────────────────────────────────────
 
 st.set_page_config(
@@ -31,7 +95,7 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* Global font & background */
+    /* Global font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     .stApp {
@@ -43,30 +107,30 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
-    /* Sage green accent */
+    /* Sage green header — dark-mode compatible */
     .sage-header {
-        background: linear-gradient(135deg, #e8f0ec 0%, #d4e4db 100%);
+        background: rgba(45, 106, 79, 0.15);
         padding: 1.5rem 2rem;
         border-radius: 12px;
         margin-bottom: 1.5rem;
-        border: 1px solid #c3d5ca;
+        border: 1px solid rgba(45, 106, 79, 0.25);
     }
     .sage-header h1 {
-        color: #2d6a4f;
+        color: #6fcf97;
         font-size: 1.75rem;
         font-weight: 700;
         margin: 0 0 0.25rem 0;
     }
     .sage-header p {
-        color: #52796f;
+        color: #a8d5ba;
         font-size: 0.9rem;
         margin: 0;
     }
 
     /* Stats cards */
     .stat-card {
-        background: #f8faf9;
-        border: 1px solid #d4e4db;
+        background: rgba(45, 106, 79, 0.1);
+        border: 1px solid rgba(45, 106, 79, 0.2);
         border-radius: 10px;
         padding: 1rem;
         text-align: center;
@@ -74,30 +138,30 @@ st.markdown("""
     .stat-card .number {
         font-size: 1.75rem;
         font-weight: 700;
-        color: #2d6a4f;
+        color: #6fcf97;
     }
     .stat-card .label {
         font-size: 0.75rem;
-        color: #6b8f7e;
+        color: #a0a0a0;
         margin-top: 2px;
     }
 
     /* Quote cards */
     .quote-card {
-        background: #f8faf9;
-        border-left: 3px solid #52796f;
+        background: rgba(82, 121, 111, 0.1);
+        border-left: 3px solid #6fcf97;
         padding: 0.85rem 1rem;
         border-radius: 0 8px 8px 0;
         margin-bottom: 0.6rem;
     }
     .quote-card .text {
         font-style: italic;
-        color: #333;
+        color: #d0d0d0;
         font-size: 0.88rem;
         line-height: 1.5;
     }
     .quote-card .author {
-        color: #52796f;
+        color: #6fcf97;
         font-size: 0.78rem;
         font-weight: 500;
         margin-top: 0.35rem;
@@ -105,8 +169,8 @@ st.markdown("""
 
     /* Entry card */
     .entry-card {
-        background: #fafcfb;
-        border: 1px solid #d4e4db;
+        background: rgba(45, 106, 79, 0.08);
+        border: 1px solid rgba(45, 106, 79, 0.18);
         border-radius: 10px;
         padding: 1rem 1.25rem;
         margin-bottom: 0.75rem;
@@ -125,8 +189,8 @@ st.markdown("""
 
     /* Summary reflection box */
     .reflection-box {
-        background: linear-gradient(135deg, #edf5f0 0%, #e0ece5 100%);
-        border: 1px solid #b8d4c4;
+        background: rgba(45, 106, 79, 0.12);
+        border: 1px solid rgba(45, 106, 79, 0.25);
         border-radius: 10px;
         padding: 1.25rem;
         margin-bottom: 1rem;
@@ -136,19 +200,19 @@ st.markdown("""
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #2d6a4f;
+        color: #6fcf97;
         margin-bottom: 0.5rem;
     }
     .reflection-box .text {
         font-size: 0.9rem;
         line-height: 1.6;
-        color: #333;
+        color: #d0d0d0;
     }
 
     /* Disclaimer */
     .disclaimer {
         font-size: 0.7rem;
-        color: #888;
+        color: #999;
         font-style: italic;
     }
 
@@ -159,7 +223,7 @@ st.markdown("""
         color: #888;
         font-size: 0.75rem;
     }
-    .attribution a { color: #52796f; }
+    .attribution a { color: #6fcf97; }
 
     /* Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
@@ -194,27 +258,33 @@ def get_api_key():
 
 # ── Visualization helpers ─────────────────────────────
 
-def render_word_cloud(word_freqs, height=280):
-    """Render a word cloud from [{word, count}, ...] list."""
+def _emotion_color_func(word, **kwargs):
+    """Color function for WordCloud — maps words to emotion colors."""
+    return get_emotion_color(word)
+
+
+def render_word_cloud(word_freqs, height=220):
+    """Render an emotion-color-coded word cloud from [{word, count}, ...] list."""
     if not word_freqs:
         st.info("No words to display.")
         return
     freq_dict = {w["word"]: w["count"] for w in word_freqs[:20]}
     wc = WordCloud(
-        width=800,
+        width=700,
         height=height,
-        background_color="white",
-        colormap="BuGn",
+        background_color=None,
+        mode="RGBA",
         max_words=20,
         prefer_horizontal=0.7,
-        min_font_size=14,
-        max_font_size=80,
+        min_font_size=12,
+        max_font_size=64,
         relative_scaling=0.5,
+        color_func=_emotion_color_func,
     ).generate_from_frequencies(freq_dict)
-    fig, ax = plt.subplots(figsize=(8, height / 100))
+    fig, ax = plt.subplots(figsize=(7, height / 100))
     ax.imshow(wc, interpolation="bilinear")
     ax.axis("off")
-    fig.patch.set_facecolor("white")
+    fig.patch.set_alpha(0.0)
     plt.tight_layout(pad=0)
     st.pyplot(fig)
     plt.close(fig)
@@ -243,17 +313,17 @@ def render_emotion_radar(emotions, chart_key=None):
             radialaxis=dict(
                 visible=True, range=[0, 100],
                 tickfont=dict(size=9, color="#888"),
-                gridcolor="#e0e0e0",
+                gridcolor="rgba(255,255,255,0.1)",
             ),
             angularaxis=dict(
-                tickfont=dict(size=11, color="#333"),
+                tickfont=dict(size=11, color="#ccc"),
             ),
-            bgcolor="white",
+            bgcolor="rgba(0,0,0,0)",
         ),
         showlegend=False,
         margin=dict(l=50, r=50, t=20, b=20),
         height=350,
-        paper_bgcolor="white",
+        paper_bgcolor="rgba(0,0,0,0)",
     )
     st.plotly_chart(fig, use_container_width=True, key=chart_key)
 
@@ -272,7 +342,7 @@ def render_disorder_chart(disorders, chart_key=None):
         orientation="h",
         marker=dict(
             color=values,
-            colorscale=[[0, "#d4e4db"], [0.5, "#52796f"], [1, "#2d6a4f"]],
+            colorscale=[[0, "#3a7d5c"], [0.5, "#52796f"], [1, "#6fcf97"]],
             line=dict(width=0),
         ),
         text=[f"{v}%" for v in values],
@@ -282,14 +352,15 @@ def render_disorder_chart(disorders, chart_key=None):
     fig.update_layout(
         xaxis=dict(
             range=[0, 100],
-            title=dict(text="Relevance Score", font=dict(size=11)),
-            gridcolor="#f0f0f0",
+            title=dict(text="Relevance Score", font=dict(size=11, color="#aaa")),
+            gridcolor="rgba(255,255,255,0.08)",
+            tickfont=dict(color="#aaa"),
         ),
-        yaxis=dict(autorange="reversed", tickfont=dict(size=11)),
+        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#ccc")),
         margin=dict(l=10, r=20, t=10, b=40),
         height=max(200, len(names) * 45 + 60),
-        paper_bgcolor="white",
-        plot_bgcolor="white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     st.plotly_chart(fig, use_container_width=True, key=chart_key)
 
@@ -489,7 +560,7 @@ def page_home():
                     st.rerun()
         with nav_cols[1]:
             if user:
-                st.markdown(f"<div style='text-align:center;padding-top:8px;font-size:0.85rem;color:#52796f;font-weight:500;'>{user['username']}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align:center;padding-top:8px;font-size:0.85rem;color:#6fcf97;font-weight:500;'>{user['username']}</div>", unsafe_allow_html=True)
             else:
                 if st.button("🔑 Sign In", use_container_width=True):
                     st.session_state.page = "auth"
@@ -638,7 +709,7 @@ def page_history():
                 st.session_state.page = "home"
                 st.rerun()
         with nav_cols[1]:
-            st.markdown(f"<div style='text-align:center;padding-top:8px;font-size:0.85rem;color:#52796f;font-weight:500;'>{user['username']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align:center;padding-top:8px;font-size:0.85rem;color:#6fcf97;font-weight:500;'>{user['username']}</div>", unsafe_allow_html=True)
         with nav_cols[2]:
             if st.button("Sign Out", use_container_width=True, key="hist_signout"):
                 st.session_state.user = None
@@ -707,7 +778,7 @@ def page_history():
 
     # Cumulative Word Map
     st.markdown(f"**Cumulative Word Map** — words aggregated across {len(entries)} {'analysis' if len(entries)==1 else 'analyses'}")
-    render_word_cloud(cum_words, height=300)
+    render_word_cloud(cum_words, height=240)
 
     st.write("")
 
@@ -723,11 +794,11 @@ def page_history():
         st.caption("How often each emotion recurs across your writing")
         for em in top_emotions:
             badge_html = f"""
-            <div style="display:inline-flex; align-items:center; gap:8px; padding:4px 12px; border-radius:20px; background:#f0f4f2; margin-bottom:6px;">
-                <div style="width:8px;height:8px;border-radius:50%;background:{em['color']};"></div>
-                <span style="font-size:0.8rem;font-weight:500;">{em['emotion']}</span>
-                <span style="font-size:0.75rem;color:#666;">{em['recurrence_rate']}% recurrence</span>
-                <span style="font-size:0.65rem;color:#999;">avg {em['avg_intensity']}%</span>
+            <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; background:rgba(45,106,79,0.12); border:1px solid rgba(45,106,79,0.2); margin-bottom:6px; width:100%;">
+                <div style="width:10px;height:10px;border-radius:50%;background:{em['color']};flex-shrink:0;"></div>
+                <span style="font-size:0.82rem;font-weight:600;color:#e0e0e0;">{em['emotion']}</span>
+                <span style="font-size:0.75rem;color:#a0a0a0;margin-left:auto;">{em['recurrence_rate']}% recurrence</span>
+                <span style="font-size:0.68rem;color:#888;">avg {em['avg_intensity']}%</span>
             </div>
             """
             st.markdown(badge_html, unsafe_allow_html=True)
@@ -758,7 +829,7 @@ def page_history():
                     <span style="font-size:0.8rem;font-weight:500;">📅 {entry['date_written']}</span>
                     {emotion_html}
                 </div>
-                <p style="font-size:0.85rem;color:#666;line-height:1.5;margin:0;">
+                <p style="font-size:0.85rem;color:#b0b0b0;line-height:1.5;margin:0;">
                     {entry['summary'][:200]}{'...' if len(entry['summary'])>200 else ''}
                 </p>
             </div>
