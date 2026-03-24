@@ -220,7 +220,7 @@ def render_word_cloud(word_freqs, height=280):
     plt.close(fig)
 
 
-def render_emotion_radar(emotions):
+def render_emotion_radar(emotions, chart_key=None):
     """Render a radar/polar chart for emotions."""
     if not emotions:
         return
@@ -255,10 +255,10 @@ def render_emotion_radar(emotions):
         height=350,
         paper_bgcolor="white",
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key=chart_key)
 
 
-def render_disorder_chart(disorders):
+def render_disorder_chart(disorders, chart_key=None):
     """Render a horizontal bar chart for disorder relevance."""
     if not disorders:
         return
@@ -291,7 +291,7 @@ def render_disorder_chart(disorders):
         paper_bgcolor="white",
         plot_bgcolor="white",
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key=chart_key)
 
 
 def render_quotes(quotes):
@@ -577,12 +577,12 @@ def page_home():
             render_word_cloud(analysis["wordFrequencies"])
         with col2:
             st.markdown("**Emotional Landscape**")
-            render_emotion_radar(analysis["emotions"])
+            render_emotion_radar(analysis["emotions"], chart_key="home_emotion_radar")
 
         # Disorders
         st.markdown("**Potential Symptom Patterns**")
         st.markdown('<p class="disclaimer">Not a diagnosis. Patterns that may warrant reflection or professional consultation.</p>', unsafe_allow_html=True)
-        render_disorder_chart(analysis["disorders"])
+        render_disorder_chart(analysis["disorders"], chart_key="home_disorder_chart")
 
         # Symptoms detail
         for d in analysis["disorders"]:
@@ -717,7 +717,7 @@ def page_history():
         st.markdown(f"**Cumulative Emotional Landscape**")
         st.caption(f"Weighted intensity across {len(entries)} {'analysis' if len(entries)==1 else 'analyses'} — emotions that recur more often score higher")
         if cum_emotions:
-            render_emotion_radar(cum_emotions)
+            render_emotion_radar(cum_emotions, chart_key="hist_cum_emotion_radar")
     with ecol2:
         st.markdown("**Recurring Emotions**")
         st.caption("How often each emotion recurs across your writing")
@@ -738,7 +738,7 @@ def page_history():
     if cum_disorders:
         st.markdown("**Cumulative Symptom Patterns**")
         st.caption("Average relevance across all analyses. Not a diagnosis — patterns that may warrant reflection or professional consultation.")
-        render_disorder_chart(cum_disorders)
+        render_disorder_chart(cum_disorders, chart_key="hist_cum_disorder_chart")
 
     st.divider()
 
@@ -790,11 +790,11 @@ def page_history():
                 render_word_cloud(entry["word_frequencies"], height=220)
             with dcol2:
                 st.markdown("**Emotional Landscape**")
-                render_emotion_radar(entry["emotions"])
+                render_emotion_radar(entry["emotions"], chart_key=f"entry_{entry['id']}_emotion")
 
             st.markdown("**Potential Symptom Patterns**")
             st.markdown('<p class="disclaimer">Not a diagnosis. Patterns that may warrant reflection or professional consultation.</p>', unsafe_allow_html=True)
-            render_disorder_chart(entry["disorders"])
+            render_disorder_chart(entry["disorders"], chart_key=f"entry_{entry['id']}_disorder")
 
             st.markdown("**Words for Reflection**")
             render_quotes(entry.get("quotes", []))
