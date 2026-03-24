@@ -281,8 +281,9 @@ def render_disorder_chart(disorders):
     ))
     fig.update_layout(
         xaxis=dict(
-            range=[0, 100], title="Relevance Score",
-            gridcolor="#f0f0f0", titlefont=dict(size=11),
+            range=[0, 100],
+            title=dict(text="Relevance Score", font=dict(size=11)),
+            gridcolor="#f0f0f0",
         ),
         yaxis=dict(autorange="reversed", tickfont=dict(size=11)),
         margin=dict(l=10, r=20, t=10, b=40),
