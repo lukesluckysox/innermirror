@@ -409,6 +409,12 @@ def compute_cumulative_disorders(entries):
 
 def page_auth():
     """Login / Register page."""
+    # If already logged in, go home
+    if st.session_state.user:
+        st.session_state.page = "home"
+        st.rerun()
+        return
+
     st.markdown("""
     <div class="sage-header" style="text-align:center; max-width:450px; margin:4rem auto 2rem auto;">
         <h1>🪞 Inner Mirror</h1>
@@ -432,6 +438,7 @@ def page_auth():
                         user = db.login(username, password)
                         if user:
                             st.session_state.user = user
+                            st.session_state.page = "home"
                             st.rerun()
                         else:
                             st.error("Invalid credentials.")
@@ -450,6 +457,7 @@ def page_auth():
                         user = db.register(new_user, new_pass)
                         if user:
                             st.session_state.user = user
+                            st.session_state.page = "home"
                             st.rerun()
                         else:
                             st.error("Username already taken.")
@@ -818,5 +826,5 @@ def main():
         page_home()
 
 
-if __name__ == "__main__":
-    main()
+# Streamlit always runs the full script
+main()
