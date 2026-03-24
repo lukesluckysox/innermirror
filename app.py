@@ -237,6 +237,48 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+# ── Quote of the Day ─────────────────────────────────
+
+DAILY_QUOTES = [
+    {"text": "The wound is the place where the Light enters you.", "author": "Rumi"},
+    {"text": "Out of your vulnerabilities will come your strength.", "author": "Sigmund Freud"},
+    {"text": "The soul always knows what to do to heal itself. The challenge is to silence the mind.", "author": "Caroline Myss"},
+    {"text": "There is no greater agony than bearing an untold story inside you.", "author": "Maya Angelou"},
+    {"text": "What we achieve inwardly will change outer reality.", "author": "Plutarch"},
+    {"text": "The only journey is the one within.", "author": "Rainer Maria Rilke"},
+    {"text": "To know yourself, you must sacrifice the illusion that you already do.", "author": "Vironika Tugaleva"},
+    {"text": "One does not become enlightened by imagining figures of light, but by making the darkness conscious.", "author": "Carl Jung"},
+    {"text": "Your task is not to seek for love, but merely to seek and find all the barriers within yourself that you have built against it.", "author": "Rumi"},
+    {"text": "The curious paradox is that when I accept myself just as I am, then I can change.", "author": "Carl Rogers"},
+    {"text": "In the middle of difficulty lies opportunity.", "author": "Albert Einstein"},
+    {"text": "We are not what happened to us. We are what we wish to become.", "author": "Carl Jung"},
+    {"text": "The privilege of a lifetime is to become who you truly are.", "author": "Carl Jung"},
+    {"text": "Between stimulus and response there is a space. In that space is our power to choose our response.", "author": "Viktor Frankl"},
+    {"text": "Knowing your own darkness is the best method for dealing with the darknesses of other people.", "author": "Carl Jung"},
+    {"text": "Almost everything will work again if you unplug it for a few minutes, including you.", "author": "Anne Lamott"},
+    {"text": "You don't have to control your thoughts. You just have to stop letting them control you.", "author": "Dan Millman"},
+    {"text": "The greatest discovery of my generation is that a human being can alter his life by altering his attitudes.", "author": "William James"},
+    {"text": "What lies behind us and what lies before us are tiny matters compared to what lies within us.", "author": "Ralph Waldo Emerson"},
+    {"text": "Ring the bells that still can ring. Forget your perfect offering. There is a crack in everything. That's how the light gets in.", "author": "Leonard Cohen"},
+    {"text": "The emotion that can break your heart is sometimes the very one that heals it.", "author": "Nicholas Sparks"},
+    {"text": "You are not a drop in the ocean. You are the entire ocean in a drop.", "author": "Rumi"},
+    {"text": "Healing is not an overnight process. It is a daily cleansing of pain, it is a daily healing of your life.", "author": "Leon Brown"},
+    {"text": "The most beautiful people we have known are those who have known defeat, known suffering, known loss, and have found their way out of the depths.", "author": "Elisabeth Kübler-Ross"},
+    {"text": "We are healed of a suffering only by experiencing it to the full.", "author": "Marcel Proust"},
+    {"text": "There is a voice that doesn't use words. Listen.", "author": "Rumi"},
+    {"text": "Unexpressed emotions will never die. They are buried alive and will come forth later in uglier ways.", "author": "Sigmund Freud"},
+    {"text": "The best way out is always through.", "author": "Robert Frost"},
+    {"text": "Stars can't shine without darkness.", "author": "D.H. Sidebottom"},
+    {"text": "Vulnerability is the birthplace of innovation, creativity, and change.", "author": "Brené Brown"},
+    {"text": "Your heart knows the way. Run in that direction.", "author": "Rumi"},
+]
+
+def get_daily_quote():
+    """Return a quote that changes once per day."""
+    day_index = date.today().toordinal() % len(DAILY_QUOTES)
+    return DAILY_QUOTES[day_index]
+
+
 # ── Session state init ────────────────────────────────
 
 if "user" not in st.session_state:
@@ -329,11 +371,25 @@ def render_emotion_radar(emotions, chart_key=None):
 
 
 def render_disorder_chart(disorders, chart_key=None):
-    """Render a horizontal bar chart for disorder relevance."""
+    """Render a horizontal bar chart for disorder relevance with hover descriptions."""
     if not disorders:
         return
     names = [d["disorder"] for d in disorders]
     values = [d["relevance"] for d in disorders]
+
+    # Build hover text with symptoms and description
+    hover_texts = []
+    for d in disorders:
+        parts = [f"<b>{d['disorder']}</b> — {d['relevance']}% relevance"]
+        if d.get("symptoms"):
+            parts.append(f"<br><b>Symptoms:</b> {', '.join(d['symptoms'][:4])}")
+        if d.get("description"):
+            # Wrap long descriptions
+            desc = d["description"]
+            if len(desc) > 120:
+                desc = desc[:120] + "..."
+            parts.append(f"<br><i>{desc}</i>")
+        hover_texts.append("".join(parts))
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
@@ -348,6 +404,8 @@ def render_disorder_chart(disorders, chart_key=None):
         text=[f"{v}%" for v in values],
         textposition="auto",
         textfont=dict(size=11, color="white"),
+        hovertext=hover_texts,
+        hoverinfo="text",
     ))
     fig.update_layout(
         xaxis=dict(
@@ -358,9 +416,14 @@ def render_disorder_chart(disorders, chart_key=None):
         ),
         yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#ccc")),
         margin=dict(l=10, r=20, t=10, b=40),
-        height=max(200, len(names) * 45 + 60),
+        height=max(200, len(names) * 50 + 60),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        hoverlabel=dict(
+            bgcolor="#1a1a2e",
+            bordercolor="#6fcf97",
+            font=dict(size=12, color="#e0e0e0"),
+        ),
     )
     st.plotly_chart(fig, use_container_width=True, key=chart_key)
 
@@ -539,12 +602,22 @@ def page_home():
     """Main analysis page."""
     # Header
     user = st.session_state.user
+    qotd = get_daily_quote()
     hdr_left, hdr_right = st.columns([3, 1])
     with hdr_left:
-        st.markdown("""
+        st.markdown(f"""
         <div class="sage-header">
-            <h1>🪞 Inner Mirror</h1>
-            <p>Reflective writing analysis</p>
+            <div style="display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
+                <div style="flex-shrink:0;">
+                    <h1>🪞 Inner Mirror</h1>
+                    <p>Reflective writing analysis</p>
+                </div>
+                <div style="flex:1;min-width:200px;padding-top:4px;border-left:2px solid rgba(111,207,151,0.3);padding-left:1rem;">
+                    <div style="font-size:0.7rem;color:#6fcf97;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quote of the Day</div>
+                    <div style="font-size:0.82rem;font-style:italic;color:#c0c0c0;line-height:1.4;">"{qotd['text']}"</div>
+                    <div style="font-size:0.72rem;color:#888;margin-top:3px;">— {qotd['author']}</div>
+                </div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
     with hdr_right:
@@ -693,12 +766,22 @@ def page_history():
         return
 
     # Header
+    qotd = get_daily_quote()
     hdr_left, hdr_right = st.columns([3, 1])
     with hdr_left:
-        st.markdown("""
+        st.markdown(f"""
         <div class="sage-header">
-            <h1>🪞 Inner Mirror</h1>
-            <p>Reflective writing analysis</p>
+            <div style="display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
+                <div style="flex-shrink:0;">
+                    <h1>🪞 Inner Mirror</h1>
+                    <p>Reflective writing analysis</p>
+                </div>
+                <div style="flex:1;min-width:200px;padding-top:4px;border-left:2px solid rgba(111,207,151,0.3);padding-left:1rem;">
+                    <div style="font-size:0.7rem;color:#6fcf97;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Quote of the Day</div>
+                    <div style="font-size:0.82rem;font-style:italic;color:#c0c0c0;line-height:1.4;">"{qotd['text']}"</div>
+                    <div style="font-size:0.72rem;color:#888;margin-top:3px;">— {qotd['author']}</div>
+                </div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
     with hdr_right:
@@ -776,29 +859,32 @@ def page_history():
 
     st.write("")
 
-    # Cumulative Word Map
-    st.markdown(f"**Cumulative Word Map** — words aggregated across {len(entries)} {'analysis' if len(entries)==1 else 'analyses'}")
-    render_word_cloud(cum_words, height=240)
+    # Cumulative Word Map + Emotion Radar side by side (like single entry page)
+    wcol1, wcol2 = st.columns(2)
+    with wcol1:
+        st.markdown(f"**Cumulative Word Map** — {len(entries)} {'analysis' if len(entries)==1 else 'analyses'}")
+        render_word_cloud(cum_words, height=220)
+    with wcol2:
+        st.markdown(f"**Cumulative Emotional Landscape**")
+        st.caption(f"Weighted intensity across {len(entries)} {'analysis' if len(entries)==1 else 'analyses'}")
+        if cum_emotions:
+            render_emotion_radar(cum_emotions, chart_key="hist_cum_emotion_radar")
 
     st.write("")
 
-    # Emotion radar + Recurring emotions
-    ecol1, ecol2 = st.columns(2)
-    with ecol1:
-        st.markdown(f"**Cumulative Emotional Landscape**")
-        st.caption(f"Weighted intensity across {len(entries)} {'analysis' if len(entries)==1 else 'analyses'} — emotions that recur more often score higher")
-        if cum_emotions:
-            render_emotion_radar(cum_emotions, chart_key="hist_cum_emotion_radar")
-    with ecol2:
-        st.markdown("**Recurring Emotions**")
-        st.caption("How often each emotion recurs across your writing")
-        for em in top_emotions:
+    # Recurring emotions
+    st.markdown("**Recurring Emotions**")
+    st.caption("How often each emotion recurs across your writing")
+    # Display as a horizontal row of badges
+    cols = st.columns(min(len(top_emotions), 5)) if top_emotions else []
+    for i, em in enumerate(top_emotions):
+        with cols[i % min(len(top_emotions), 5)]:
             badge_html = f"""
-            <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; background:rgba(45,106,79,0.12); border:1px solid rgba(45,106,79,0.2); margin-bottom:6px; width:100%;">
-                <div style="width:10px;height:10px;border-radius:50%;background:{em['color']};flex-shrink:0;"></div>
-                <span style="font-size:0.82rem;font-weight:600;color:#e0e0e0;">{em['emotion']}</span>
-                <span style="font-size:0.75rem;color:#a0a0a0;margin-left:auto;">{em['recurrence_rate']}% recurrence</span>
-                <span style="font-size:0.68rem;color:#888;">avg {em['avg_intensity']}%</span>
+            <div style="display:flex; flex-direction:column; align-items:center; padding:8px 10px; border-radius:12px; background:rgba(45,106,79,0.12); border:1px solid rgba(45,106,79,0.2); margin-bottom:6px; text-align:center;">
+                <div style="width:10px;height:10px;border-radius:50%;background:{em['color']};margin-bottom:4px;"></div>
+                <span style="font-size:0.78rem;font-weight:600;color:#e0e0e0;">{em['emotion']}</span>
+                <span style="font-size:0.7rem;color:#a0a0a0;">{em['recurrence_rate']}%</span>
+                <span style="font-size:0.62rem;color:#888;">avg {em['avg_intensity']}%</span>
             </div>
             """
             st.markdown(badge_html, unsafe_allow_html=True)
