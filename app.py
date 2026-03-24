@@ -184,12 +184,12 @@ if "current_analysis" not in st.session_state:
 # ── Helper: get API key ──────────────────────────────
 
 def get_api_key():
-    """Get Anthropic API key from secrets or env."""
+    """Get Google Gemini API key from secrets or env."""
     try:
-        return st.secrets["ANTHROPIC_API_KEY"]
+        return st.secrets["GEMINI_API_KEY"]
     except Exception:
         import os
-        return os.environ.get("ANTHROPIC_API_KEY", "")
+        return os.environ.get("GEMINI_API_KEY", "")
 
 
 # ── Visualization helpers ─────────────────────────────
@@ -523,7 +523,7 @@ def page_home():
     if analyze_clicked:
         api_key = get_api_key()
         if not api_key:
-            st.error("No Anthropic API key found. Please set ANTHROPIC_API_KEY in your Streamlit secrets or environment variables.")
+            st.error("No Gemini API key found. Please set GEMINI_API_KEY in your Streamlit secrets or environment variables. Get a free key at https://aistudio.google.com/apikey")
             return
         if not text_input or len(text_input.strip()) < 10:
             st.warning("Please provide at least 10 characters of text.")

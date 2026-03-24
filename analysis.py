@@ -1,9 +1,9 @@
-"""Text analysis logic: word extraction + Anthropic LLM call."""
+"""Text analysis logic: word extraction + Google Gemini LLM call."""
 
 import json
 import re
 import os
-from anthropic import Anthropic
+from google import genai
 
 STOP_WORDS = {
     "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
@@ -42,8 +42,8 @@ def extract_word_frequencies(text: str, top_n: int = 20):
 
 
 def analyze_text(text: str, api_key: str):
-    """Call Anthropic Claude to analyze the writing. Returns parsed dict."""
-    client = Anthropic(api_key=api_key)
+    """Call Google Gemini to analyze the writing. Returns parsed dict."""
+    client = genai.Client(api_key=api_key)
     word_frequencies = extract_word_frequencies(text)
     top_words_str = ", ".join(w["word"] for w in word_frequencies[:30])
 
@@ -88,18 +88,26 @@ RULES:
 
 IMPORTANT: Return ONLY valid JSON. No markdown, no code fences, no explanation."""
 
-    message = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=2048,
-        messages=[{"role": "user", "content": prompt}],
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
     )
 
-    response_text = message.content[0].text if message.content else ""
+    response_text = response.text if response.text else ""
+
+    # Strip markdown code fences if present
+    cleaned = response_text.strip()
+    if cleaned.startswith("```"):
+        # Remove opening fence (e.g. ```json or ```)
+        cleaned = re.sub(r"^```[a-zA-Z]*\n?", "", cleaned)
+        # Remove closing fence
+        cleaned = re.sub(r"\n?```$", "", cleaned)
+        cleaned = cleaned.strip()
 
     try:
-        analysis = json.loads(response_text)
+        analysis = json.loads(cleaned)
     except json.JSONDecodeError:
-        match = re.search(r"\{[\s\S]*\}", response_text)
+        match = re.search(r"\{[\s\S]*\}", cleaned)
         if match:
             analysis = json.loads(match.group(0))
         else:

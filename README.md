@@ -19,14 +19,21 @@ A wellness-focused Streamlit app that analyzes poetry, journal entries, and pers
 # Install dependencies
 pip install -r requirements.txt
 
-# Set your Anthropic API key
-export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+# Set your Gemini API key (free — no credit card required)
+export GEMINI_API_KEY="your-gemini-api-key-here"
 
 # Run the app
 streamlit run app.py
 ```
 
 The app will open at `http://localhost:8501`.
+
+### Get a Free Gemini API Key
+
+1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
+2. Sign in with your Google account
+3. Click "Create API Key"
+4. Copy the key — no credit card or billing required
 
 ### Pre-seeded Account
 A default test account is created on first run:
@@ -40,7 +47,7 @@ A default test account is created on first run:
 3. **Connect your GitHub repo** and select `app.py` as the main file
 4. **Add your secret** — In the app settings, under "Secrets", add:
    ```toml
-   ANTHROPIC_API_KEY = "sk-ant-your-actual-key-here"
+   GEMINI_API_KEY = "your-gemini-api-key-here"
    ```
 5. **Deploy** — Click deploy and your app will be live in minutes
 
@@ -48,7 +55,7 @@ A default test account is created on first run:
 
 ```
 ├── app.py                  # Main Streamlit app (all pages)
-├── analysis.py             # Text analysis: word extraction + Anthropic LLM call
+├── analysis.py             # Text analysis: word extraction + Google Gemini LLM call
 ├── db.py                   # SQLite database layer (users + analyses)
 ├── requirements.txt        # Python dependencies
 ├── .streamlit/
@@ -62,14 +69,14 @@ A default test account is created on first run:
 
 1. Paste your writing (poetry, journal entry, etc.)
 2. The app extracts the top 20 meaningful words by frequency
-3. Claude (Anthropic) analyzes the text for emotions, diagnostic patterns, and quotes
+3. Google Gemini analyzes the text for emotions, diagnostic patterns, and quotes
 4. Results are displayed as interactive charts and saved to your history
 5. The history page shows cumulative trends across all your entries
 
 ## Tech Stack
 
 - **Streamlit** — UI framework
-- **Anthropic Claude** — AI text analysis
+- **Google Gemini** — AI text analysis (free tier, no credit card required)
 - **Plotly** — Interactive charts (radar, bar)
 - **WordCloud** — Word frequency visualization
 - **SQLite** — Local database for persistence
