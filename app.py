@@ -586,6 +586,59 @@ def render_mbti_radar(mbti_data, chart_key=None):
     st.plotly_chart(fig, use_container_width=True, key=chart_key)
 
 
+def render_moral_foundations(mf_data, chart_key=None):
+    """Render a hexagonal radar chart for Moral Foundations."""
+    foundations = ["care", "fairness", "loyalty", "authority", "sanctity", "liberty"]
+    labels = ["Care", "Fairness", "Loyalty", "Authority", "Sanctity", "Liberty"]
+    colors_map = {
+        "Care": "#E84393",       # pink
+        "Fairness": "#F2C94C",   # gold
+        "Loyalty": "#4A6FA5",    # blue
+        "Authority": "#636E72",  # slate
+        "Sanctity": "#9B51E0",   # purple
+        "Liberty": "#00B894",    # teal
+    }
+    values = [mf_data.get(f, 0) for f in foundations]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=values + [values[0]],
+        theta=labels + [labels[0]],
+        fill="toself",
+        fillcolor="rgba(111, 207, 151, 0.15)",
+        line=dict(color="#6fcf97", width=2),
+        marker=dict(
+            size=7,
+            color=[colors_map[l] for l in labels] + [colors_map[labels[0]]],
+        ),
+        name="Moral Foundations",
+        hovertext=[f"{l}: {v}" for l, v in zip(labels, values)] + [f"{labels[0]}: {values[0]}"],
+        hoverinfo="text",
+    ))
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True, range=[0, 100],
+                tickfont=dict(size=8, color="#888"),
+                gridcolor="rgba(255,255,255,0.1)",
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=10, color="#ccc"),
+            ),
+            bgcolor="rgba(0,0,0,0)",
+        ),
+        showlegend=False,
+        margin=dict(l=50, r=50, t=20, b=20),
+        height=380,
+        paper_bgcolor="rgba(0,0,0,0)",
+        hoverlabel=dict(
+            bgcolor="#1a1a2e", bordercolor="#6fcf97",
+            font=dict(size=12, color="#e0e0e0"),
+        ),
+    )
+    st.plotly_chart(fig, use_container_width=True, key=chart_key)
+
+
 # ── Cumulative helpers ────────────────────────────────
 
 def compute_cumulative_words(entries):
@@ -744,6 +797,25 @@ def compute_cumulative_mbti(entries):
     return avg
 
 
+def compute_cumulative_moral_foundations(entries):
+    """Average moral foundations scores across all entries."""
+    foundations = ["care", "fairness", "loyalty", "authority", "sanctity", "liberty"]
+    totals = {f: 0 for f in foundations}
+    count = 0
+    for e in entries:
+        mf = e.get("moral_foundations", {})
+        if mf and "care" in mf:
+            try:
+                for f in foundations:
+                    totals[f] += float(mf.get(f, 0))
+                count += 1
+            except (ValueError, TypeError):
+                pass
+    if count == 0:
+        return None
+    return {f: round(totals[f] / count) for f in foundations}
+
+
 # ── PAGES ─────────────────────────────────────────────
 
 def page_auth():
@@ -899,6 +971,7 @@ def page_home():
                         word_frequencies=result["wordFrequencies"],
                         political_compass=result.get("political_compass"),
                         mbti_profile=result.get("mbti_profile"),
+                        moral_foundations=result.get("moral_foundations"),
                     )
                     result["id"] = aid
 
@@ -941,19 +1014,27 @@ def page_home():
                 if d.get("symptoms"):
                     st.write("**Observed symptoms:** " + ", ".join(d["symptoms"]))
 
-        # Political Compass + MBTI
+        # Political Compass + MBTI + Moral Foundations
         pc = analysis.get("political_compass")
         mb = analysis.get("mbti_profile")
-        if pc or mb:
-            pcol1, pcol2 = st.columns(2)
+        mf = analysis.get("moral_foundations")
+        if pc or mb or mf:
+            pcol1, pcol2, pcol3 = st.columns(3)
             with pcol1:
                 if pc and "economic" in pc:
                     st.markdown("**Political Compass**")
+                    st.caption("Maps your writing's themes onto a political spectrum — economic left/right and social libertarian/authoritarian.")
                     render_political_compass(pc, chart_key="home_pc")
             with pcol2:
                 if mb and "E" in mb:
                     st.markdown("**MBTI Profile**")
+                    st.caption("Infers your cognitive style from how you write — introversion vs extraversion, intuition vs sensing, and more.")
                     render_mbti_radar(mb, chart_key="home_mbti")
+            with pcol3:
+                if mf and "care" in mf:
+                    st.markdown("**Moral Foundations**")
+                    st.caption("Shows which moral values your writing emphasizes — care, fairness, loyalty, authority, sanctity, and liberty.")
+                    render_moral_foundations(mf, chart_key="home_mf")
 
         # Quotes
         st.markdown("**Words for Reflection**")
@@ -1119,25 +1200,33 @@ def page_history():
 
     st.write("")
 
-    # Political Compass + MBTI Profile side by side
+    # Political Compass + MBTI Profile + Moral Foundations side by side
     cum_pc = compute_cumulative_political_compass(entries)
     cum_mbti = compute_cumulative_mbti(entries)
-    if cum_pc or cum_mbti:
-        pcol1, pcol2 = st.columns(2)
+    cum_mf = compute_cumulative_moral_foundations(entries)
+    if cum_pc or cum_mbti or cum_mf:
+        pcol1, pcol2, pcol3 = st.columns(3)
         with pcol1:
             st.markdown("**Political Compass**")
-            st.caption("Where your writing's themes and values fall on the political spectrum")
+            st.caption("Maps your writing's themes onto a political spectrum — economic left/right and social libertarian/authoritarian.")
             if cum_pc:
                 render_political_compass(cum_pc, chart_key="hist_cum_pc")
             else:
                 st.info("Not enough data yet — submit a new analysis to see your political compass.")
         with pcol2:
             st.markdown("**MBTI Profile**")
-            st.caption("Cognitive style inferred from your writing patterns")
+            st.caption("Infers your cognitive style from how you write — introversion vs extraversion, intuition vs sensing, and more.")
             if cum_mbti:
                 render_mbti_radar(cum_mbti, chart_key="hist_cum_mbti")
             else:
                 st.info("Not enough data yet — submit a new analysis to see your MBTI profile.")
+        with pcol3:
+            st.markdown("**Moral Foundations**")
+            st.caption("Shows which moral values your writing emphasizes — care, fairness, loyalty, authority, sanctity, and liberty.")
+            if cum_mf:
+                render_moral_foundations(cum_mf, chart_key="hist_cum_mf")
+            else:
+                st.info("Not enough data yet — submit a new analysis to see your moral foundations.")
 
     st.divider()
 
@@ -1195,11 +1284,12 @@ def page_history():
             st.markdown('<p class="disclaimer">Not a diagnosis. Patterns that may warrant reflection or professional consultation.</p>', unsafe_allow_html=True)
             render_disorder_chart(entry["disorders"], chart_key=f"entry_{entry['id']}_disorder")
 
-            # Political Compass + MBTI for this entry
+            # Political Compass + MBTI + Moral Foundations for this entry
             epc = entry.get("political_compass", {})
             emb = entry.get("mbti_profile", {})
-            if (epc and "economic" in epc) or (emb and "E" in emb):
-                epcol1, epcol2 = st.columns(2)
+            emf = entry.get("moral_foundations", {})
+            if (epc and "economic" in epc) or (emb and "E" in emb) or (emf and "care" in emf):
+                epcol1, epcol2, epcol3 = st.columns(3)
                 with epcol1:
                     if epc and "economic" in epc:
                         st.markdown("**Political Compass**")
@@ -1208,6 +1298,10 @@ def page_history():
                     if emb and "E" in emb:
                         st.markdown("**MBTI Profile**")
                         render_mbti_radar(emb, chart_key=f"entry_{entry['id']}_mbti")
+                with epcol3:
+                    if emf and "care" in emf:
+                        st.markdown("**Moral Foundations**")
+                        render_moral_foundations(emf, chart_key=f"entry_{entry['id']}_mf")
 
             st.markdown("**Words for Reflection**")
             render_quotes(entry.get("quotes", []))

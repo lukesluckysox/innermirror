@@ -84,6 +84,14 @@ Respond with this exact JSON structure:
     "P": 0-100,
     "type": "e.g. INFP"
   }},
+  "moral_foundations": {{
+    "care": 0-100,
+    "fairness": 0-100,
+    "loyalty": 0-100,
+    "authority": 0-100,
+    "sanctity": 0-100,
+    "liberty": 0-100
+  }},
   "summary": "A compassionate 2-3 sentence summary of the emotional state reflected in this writing, referencing key words from the text"
 }}
 
@@ -111,6 +119,14 @@ RULES:
   - T (Thinking) + F (Feeling) = 100. T = logic/analysis/detachment. F = values/empathy/personal.
   - J (Judging) + P (Perceiving) = 100. J = structure/closure/planning. P = openness/flexibility/exploration.
   - "type": The 4-letter MBTI type (e.g. "INFP", "ENTJ") based on whichever letter scores higher in each pair.
+- moral_foundations: Based on Jonathan Haidt's Moral Foundations Theory, score how strongly the writing engages each of the six moral foundations (0-100):
+  - "care": Sensitivity to suffering, empathy, compassion, protection. High if the text focuses on pain, helping, kindness, vulnerability.
+  - "fairness": Justice, equality, reciprocity, rights. High if the text addresses what's deserved, being wronged, balance.
+  - "loyalty": Group bonds, tribalism, belonging, betrayal. High if the text addresses trust, in-groups, faithfulness, or being let down.
+  - "authority": Respect for hierarchy, tradition, structure, order. High if the text defers to or rebels against rules, institutions, elders.
+  - "sanctity": Purity, the sacred, spiritual themes, disgust. High if the text touches on spiritual elevation, contamination, body, or what feels deeply wrong.
+  - "liberty": Freedom, autonomy, resistance to oppression or control. High if the text expresses feeling trapped, fighting for independence, or valuing self-determination.
+  Calibrate carefully: 70-100 = dominant theme, 40-69 = clearly present, 10-39 = faint signal, 0-9 = absent.
 - summary: Write a warm, empathetic summary that references the most frequent words and what they reveal emotionally.
 
 IMPORTANT: Return ONLY valid JSON. No markdown, no code fences, no explanation."""
