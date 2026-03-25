@@ -34,9 +34,21 @@ def init_db():
             emotions TEXT NOT NULL,
             disorders TEXT NOT NULL,
             quotes TEXT NOT NULL,
-            word_frequencies TEXT NOT NULL
+            word_frequencies TEXT NOT NULL,
+            political_compass TEXT DEFAULT '{}',
+            mbti_profile TEXT DEFAULT '{}'
         )
     """)
+    # Migrate: add new columns if they don't exist yet
+    try:
+        conn.execute("SELECT political_compass FROM analyses LIMIT 1")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE analyses ADD COLUMN political_compass TEXT DEFAULT '{}'")
+    try:
+        conn.execute("SELECT mbti_profile FROM analyses LIMIT 1")
+    except sqlite3.OperationalError:
+        conn.execute("ALTER TABLE analyses ADD COLUMN mbti_profile TEXT DEFAULT '{}'")
+
     # Seed default account: tester / tester123
     hashed = hashlib.sha256("tester123".encode()).hexdigest()
     conn.execute(
@@ -82,16 +94,20 @@ def register(username: str, password: str):
 # ── Analyses ──────────────────────────────────────────
 
 def save_analysis(user_id, text, date_written, date_analyzed, summary,
-                  emotions, disorders, quotes, word_frequencies):
+                  emotions, disorders, quotes, word_frequencies,
+                  political_compass=None, mbti_profile=None):
     conn = get_connection()
     cur = conn.execute(
         """INSERT INTO analyses
            (user_id, text, date_written, date_analyzed, summary,
-            emotions, disorders, quotes, word_frequencies)
-           VALUES (?,?,?,?,?,?,?,?,?)""",
+            emotions, disorders, quotes, word_frequencies,
+            political_compass, mbti_profile)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
         (user_id, text, date_written, date_analyzed, summary,
          json.dumps(emotions), json.dumps(disorders),
-         json.dumps(quotes), json.dumps(word_frequencies)),
+         json.dumps(quotes), json.dumps(word_frequencies),
+         json.dumps(political_compass or {}),
+         json.dumps(mbti_profile or {})),
     )
     conn.commit()
     aid = cur.lastrowid
@@ -116,6 +132,8 @@ def get_analyses(user_id, start_date=None, end_date=None, search=None):
     conn.close()
     results = []
     for r in rows:
+        pc_raw = r["political_compass"] if "political_compass" in r.keys() else "{}"
+        mb_raw = r["mbti_profile"] if "mbti_profile" in r.keys() else "{}"
         results.append({
             "id": r["id"],
             "user_id": r["user_id"],
@@ -127,6 +145,8 @@ def get_analyses(user_id, start_date=None, end_date=None, search=None):
             "disorders": json.loads(r["disorders"]),
             "quotes": json.loads(r["quotes"]),
             "word_frequencies": json.loads(r["word_frequencies"]),
+            "political_compass": json.loads(pc_raw) if pc_raw else {},
+            "mbti_profile": json.loads(mb_raw) if mb_raw else {},
         })
     return results
 

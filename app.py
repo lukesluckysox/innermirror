@@ -439,6 +439,153 @@ def render_quotes(quotes):
         """, unsafe_allow_html=True)
 
 
+def render_political_compass(pc_data, chart_key=None):
+    """Render a political compass quad chart."""
+    econ = pc_data.get("economic", 0)
+    social = pc_data.get("social", 0)
+    label = pc_data.get("label", "")
+
+    fig = go.Figure()
+
+    # Quadrant background shading
+    quads = [
+        {"x0": -5, "x1": 0, "y0": 0, "y1": 5, "color": "rgba(235,87,87,0.08)", "label": "Authoritarian\nLeft"},
+        {"x0": 0, "x1": 5, "y0": 0, "y1": 5, "color": "rgba(74,111,165,0.08)", "label": "Authoritarian\nRight"},
+        {"x0": -5, "x1": 0, "y0": -5, "y1": 0, "color": "rgba(0,184,148,0.08)", "label": "Libertarian\nLeft"},
+        {"x0": 0, "x1": 5, "y0": -5, "y1": 0, "color": "rgba(155,81,224,0.08)", "label": "Libertarian\nRight"},
+    ]
+    for q in quads:
+        fig.add_shape(
+            type="rect", x0=q["x0"], x1=q["x1"], y0=q["y0"], y1=q["y1"],
+            fillcolor=q["color"], line=dict(width=0), layer="below",
+        )
+
+    # Quadrant labels
+    label_positions = [
+        {"x": -3.5, "y": 3.5, "text": "Authoritarian<br>Left", "color": "rgba(235,87,87,0.35)"},
+        {"x": 3.5, "y": 3.5, "text": "Authoritarian<br>Right", "color": "rgba(74,111,165,0.35)"},
+        {"x": -3.5, "y": -3.5, "text": "Libertarian<br>Left", "color": "rgba(0,184,148,0.35)"},
+        {"x": 3.5, "y": -3.5, "text": "Libertarian<br>Right", "color": "rgba(155,81,224,0.35)"},
+    ]
+    for lp in label_positions:
+        fig.add_annotation(
+            x=lp["x"], y=lp["y"], text=lp["text"],
+            showarrow=False, font=dict(size=10, color=lp["color"]),
+            xref="x", yref="y",
+        )
+
+    # Axis lines through center
+    fig.add_shape(type="line", x0=-5, x1=5, y0=0, y1=0,
+                  line=dict(color="rgba(255,255,255,0.2)", width=1))
+    fig.add_shape(type="line", x0=0, x1=0, y0=-5, y1=5,
+                  line=dict(color="rgba(255,255,255,0.2)", width=1))
+
+    # User's position
+    fig.add_trace(go.Scatter(
+        x=[econ], y=[social],
+        mode="markers+text",
+        marker=dict(size=14, color="#6fcf97", line=dict(width=2, color="white")),
+        text=[label],
+        textposition="top center",
+        textfont=dict(size=11, color="#e0e0e0"),
+        hovertext=f"Economic: {econ:.1f}<br>Social: {social:.1f}<br>{label}",
+        hoverinfo="text",
+    ))
+
+    fig.update_layout(
+        xaxis=dict(
+            range=[-5.5, 5.5],
+            title=dict(text="Economic Left ←  → Right", font=dict(size=10, color="#aaa")),
+            tickfont=dict(size=9, color="#888"),
+            gridcolor="rgba(255,255,255,0.05)",
+            zeroline=False,
+        ),
+        yaxis=dict(
+            range=[-5.5, 5.5],
+            title=dict(text="Libertarian ←  → Authoritarian", font=dict(size=10, color="#aaa")),
+            tickfont=dict(size=9, color="#888"),
+            gridcolor="rgba(255,255,255,0.05)",
+            zeroline=False,
+        ),
+        height=380,
+        margin=dict(l=50, r=20, t=20, b=50),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+        hoverlabel=dict(
+            bgcolor="#1a1a2e", bordercolor="#6fcf97",
+            font=dict(size=12, color="#e0e0e0"),
+        ),
+    )
+    st.plotly_chart(fig, use_container_width=True, key=chart_key)
+
+
+def render_mbti_radar(mbti_data, chart_key=None):
+    """Render an MBTI profile as a radar/web chart."""
+    mbti_type = mbti_data.get("type", "????")
+
+    # 8 dimensions on the radar
+    dims = ["E", "I", "S", "N", "T", "F", "J", "P"]
+    dim_labels = [
+        "Extraversion", "Introversion",
+        "Sensing", "Intuition",
+        "Thinking", "Feeling",
+        "Judging", "Perceiving",
+    ]
+    values = [mbti_data.get(d, 50) for d in dims]
+
+    # Colors for each dimension
+    dim_colors = [
+        "#F2C94C", "#4A6FA5",  # E=gold, I=blue
+        "#00B894", "#9B51E0",  # S=green, N=purple
+        "#EB5757", "#E84393",  # T=red, F=pink
+        "#636E72", "#FDCB6E",  # J=gray, P=amber
+    ]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=values + [values[0]],
+        theta=dim_labels + [dim_labels[0]],
+        fill="toself",
+        fillcolor="rgba(111, 207, 151, 0.15)",
+        line=dict(color="#6fcf97", width=2),
+        marker=dict(size=7, color=dim_colors + [dim_colors[0]]),
+        name="MBTI",
+        hovertext=[f"{l}: {v}%" for l, v in zip(dim_labels, values)] + [f"{dim_labels[0]}: {values[0]}%"],
+        hoverinfo="text",
+    ))
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True, range=[0, 100],
+                tickfont=dict(size=8, color="#888"),
+                gridcolor="rgba(255,255,255,0.1)",
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=10, color="#ccc"),
+            ),
+            bgcolor="rgba(0,0,0,0)",
+        ),
+        showlegend=False,
+        margin=dict(l=50, r=50, t=30, b=20),
+        height=380,
+        paper_bgcolor="rgba(0,0,0,0)",
+        annotations=[
+            dict(
+                text=f"<b>{mbti_type}</b>",
+                x=0.5, y=1.05, xref="paper", yref="paper",
+                showarrow=False,
+                font=dict(size=18, color="#6fcf97"),
+            )
+        ],
+        hoverlabel=dict(
+            bgcolor="#1a1a2e", bordercolor="#6fcf97",
+            font=dict(size=12, color="#e0e0e0"),
+        ),
+    )
+    st.plotly_chart(fig, use_container_width=True, key=chart_key)
+
+
 # ── Cumulative helpers ────────────────────────────────
 
 def compute_cumulative_words(entries):
@@ -538,6 +685,63 @@ def compute_cumulative_disorders(entries):
         })
     result.sort(key=lambda x: x["relevance"], reverse=True)
     return result[:8]
+
+
+def compute_cumulative_political_compass(entries):
+    """Average political compass coordinates across all entries."""
+    econ_vals = []
+    social_vals = []
+    for e in entries:
+        pc = e.get("political_compass", {})
+        if pc and "economic" in pc and "social" in pc:
+            try:
+                econ_vals.append(float(pc["economic"]))
+                social_vals.append(float(pc["social"]))
+            except (ValueError, TypeError):
+                pass
+    if not econ_vals:
+        return None
+    avg_econ = sum(econ_vals) / len(econ_vals)
+    avg_social = sum(social_vals) / len(social_vals)
+    # Determine label
+    lr = "Left" if avg_econ < -0.5 else ("Right" if avg_econ > 0.5 else "Center")
+    al = "Libertarian" if avg_social < -0.5 else ("Authoritarian" if avg_social > 0.5 else "Centrist")
+    if lr == "Center" and al == "Centrist":
+        label = "Centrist"
+    elif al == "Centrist":
+        label = lr
+    elif lr == "Center":
+        label = al
+    else:
+        label = f"{al}-{lr}"
+    return {"economic": round(avg_econ, 2), "social": round(avg_social, 2), "label": label}
+
+
+def compute_cumulative_mbti(entries):
+    """Average MBTI profiles across all entries."""
+    dims = ["E", "I", "S", "N", "T", "F", "J", "P"]
+    totals = {d: 0 for d in dims}
+    count = 0
+    for e in entries:
+        mb = e.get("mbti_profile", {})
+        if mb and "E" in mb:
+            try:
+                for d in dims:
+                    totals[d] += float(mb.get(d, 50))
+                count += 1
+            except (ValueError, TypeError):
+                pass
+    if count == 0:
+        return None
+    avg = {d: round(totals[d] / count) for d in dims}
+    # Determine type from averages
+    t = ""
+    t += "E" if avg["E"] >= avg["I"] else "I"
+    t += "S" if avg["S"] >= avg["N"] else "N"
+    t += "T" if avg["T"] >= avg["F"] else "F"
+    t += "J" if avg["J"] >= avg["P"] else "P"
+    avg["type"] = t
+    return avg
 
 
 # ── PAGES ─────────────────────────────────────────────
@@ -693,6 +897,8 @@ def page_home():
                         disorders=result["disorders"],
                         quotes=result["quotes"],
                         word_frequencies=result["wordFrequencies"],
+                        political_compass=result.get("political_compass"),
+                        mbti_profile=result.get("mbti_profile"),
                     )
                     result["id"] = aid
 
@@ -734,6 +940,20 @@ def page_home():
                 st.write(d.get("description", ""))
                 if d.get("symptoms"):
                     st.write("**Observed symptoms:** " + ", ".join(d["symptoms"]))
+
+        # Political Compass + MBTI
+        pc = analysis.get("political_compass")
+        mb = analysis.get("mbti_profile")
+        if pc or mb:
+            pcol1, pcol2 = st.columns(2)
+            with pcol1:
+                if pc and "economic" in pc:
+                    st.markdown("**Political Compass**")
+                    render_political_compass(pc, chart_key="home_pc")
+            with pcol2:
+                if mb and "E" in mb:
+                    st.markdown("**MBTI Profile**")
+                    render_mbti_radar(mb, chart_key="home_mbti")
 
         # Quotes
         st.markdown("**Words for Reflection**")
@@ -897,6 +1117,28 @@ def page_history():
         st.caption("Average relevance across all analyses. Not a diagnosis — patterns that may warrant reflection or professional consultation.")
         render_disorder_chart(cum_disorders, chart_key="hist_cum_disorder_chart")
 
+    st.write("")
+
+    # Political Compass + MBTI Profile side by side
+    cum_pc = compute_cumulative_political_compass(entries)
+    cum_mbti = compute_cumulative_mbti(entries)
+    if cum_pc or cum_mbti:
+        pcol1, pcol2 = st.columns(2)
+        with pcol1:
+            st.markdown("**Political Compass**")
+            st.caption("Where your writing's themes and values fall on the political spectrum")
+            if cum_pc:
+                render_political_compass(cum_pc, chart_key="hist_cum_pc")
+            else:
+                st.info("Not enough data yet — submit a new analysis to see your political compass.")
+        with pcol2:
+            st.markdown("**MBTI Profile**")
+            st.caption("Cognitive style inferred from your writing patterns")
+            if cum_mbti:
+                render_mbti_radar(cum_mbti, chart_key="hist_cum_mbti")
+            else:
+                st.info("Not enough data yet — submit a new analysis to see your MBTI profile.")
+
     st.divider()
 
     # Entry list
@@ -952,6 +1194,20 @@ def page_history():
             st.markdown("**Potential Symptom Patterns**")
             st.markdown('<p class="disclaimer">Not a diagnosis. Patterns that may warrant reflection or professional consultation.</p>', unsafe_allow_html=True)
             render_disorder_chart(entry["disorders"], chart_key=f"entry_{entry['id']}_disorder")
+
+            # Political Compass + MBTI for this entry
+            epc = entry.get("political_compass", {})
+            emb = entry.get("mbti_profile", {})
+            if (epc and "economic" in epc) or (emb and "E" in emb):
+                epcol1, epcol2 = st.columns(2)
+                with epcol1:
+                    if epc and "economic" in epc:
+                        st.markdown("**Political Compass**")
+                        render_political_compass(epc, chart_key=f"entry_{entry['id']}_pc")
+                with epcol2:
+                    if emb and "E" in emb:
+                        st.markdown("**MBTI Profile**")
+                        render_mbti_radar(emb, chart_key=f"entry_{entry['id']}_mbti")
 
             st.markdown("**Words for Reflection**")
             render_quotes(entry.get("quotes", []))

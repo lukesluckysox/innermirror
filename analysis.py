@@ -68,6 +68,22 @@ Respond with this exact JSON structure:
   "quotes": [
     {{"text": "the quote", "author": "who said it"}}
   ],
+  "political_compass": {{
+    "economic": -5.0 to 5.0,
+    "social": -5.0 to 5.0,
+    "label": "brief label like 'Left-Libertarian' or 'Centrist'"
+  }},
+  "mbti_profile": {{
+    "E": 0-100,
+    "I": 0-100,
+    "S": 0-100,
+    "N": 0-100,
+    "T": 0-100,
+    "F": 0-100,
+    "J": 0-100,
+    "P": 0-100,
+    "type": "e.g. INFP"
+  }},
   "summary": "A compassionate 2-3 sentence summary of the emotional state reflected in this writing, referencing key words from the text"
 }}
 
@@ -84,6 +100,17 @@ RULES:
   - 10-39 = speculative, faint signal
   Use ONLY these standardized disorder names to enable consistent tracking across multiple analyses: "Major Depression", "Generalized Anxiety", "Complicated Grief", "PTSD", "Adjustment Disorder", "Existential Crisis", "Attachment Anxiety", "Dissociative Tendencies", "Social Isolation", "Emotional Dysregulation", "Anticipatory Grief", "Burnout", "Identity Disturbance". Pick 3-5 that fit best. Include 2-4 specific symptoms for each. In the description, reference specific words from the KEY WORDS list that support this pattern.
 - quotes: Provide exactly 5 meaningful quotes from poets, philosophers, psychologists, or authors that address the emotional themes. Choose quotes that relate to the key words and themes.
+- political_compass: Based on the VALUES, WORLDVIEW, and THEMES expressed in the writing (not the emotions), estimate where the author falls on the standard political compass:
+  - "economic": -5.0 (far left, collectivist, anti-capitalist) to +5.0 (far right, free market, individualist). 0 = center.
+  - "social": -5.0 (libertarian, anti-authority, personal freedom) to +5.0 (authoritarian, tradition, order, hierarchy). 0 = center.
+  - "label": A concise label like "Left-Libertarian", "Right-Authoritarian", "Centrist", "Libertarian-Left", etc.
+  Look for clues in the text: themes of freedom vs order, individual vs collective, critique of institutions, authority, tradition, rebellion, equality, hierarchy, capitalism, community.
+- mbti_profile: Based on the WRITING STYLE, THEMES, and EMOTIONAL PATTERNS, estimate the Myers-Briggs cognitive preferences. Each pair must sum to 100:
+  - E (Extraversion) + I (Introversion) = 100. E = focus on outer world/action/people. I = inner world/reflection/solitude.
+  - S (Sensing) + N (Intuition) = 100. S = concrete/practical/detail. N = abstract/metaphorical/big-picture.
+  - T (Thinking) + F (Feeling) = 100. T = logic/analysis/detachment. F = values/empathy/personal.
+  - J (Judging) + P (Perceiving) = 100. J = structure/closure/planning. P = openness/flexibility/exploration.
+  - "type": The 4-letter MBTI type (e.g. "INFP", "ENTJ") based on whichever letter scores higher in each pair.
 - summary: Write a warm, empathetic summary that references the most frequent words and what they reveal emotionally.
 
 IMPORTANT: Return ONLY valid JSON. No markdown, no code fences, no explanation."""
