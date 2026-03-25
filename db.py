@@ -1,3 +1,4 @@
+
 """SQLite database layer for Inner Mirror."""
 
 import sqlite3
