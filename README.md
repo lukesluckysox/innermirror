@@ -8,7 +8,9 @@ A wellness-focused Streamlit app that analyzes poetry, journal entries, and pers
 - **Emotional Landscape** — Radar chart showing detected emotions with intensity scores
 - **Symptom Patterns** — Bar chart of potential diagnostic themes grounded in the text's language
 - **Quotes for Reflection** — 5 curated quotes that address the emotions detected in your writing
-- **History & Tracking** — Cumulative word map, weighted emotion radar, recurrence rates, and disorder trends across all entries
+- **Political Compass** — Quad chart showing political leaning inferred from writing themes
+- **MBTI Profile** — Radar chart of Myers-Briggs cognitive preferences based on writing style
+- **History & Tracking** — Cumulative word map, weighted emotion radar, recurrence rates, disorder trends, political compass, and MBTI across all entries
 - **Date Filtering** — Filter history by date written or search by keywords
 - **User Authentication** — Login to save and track analyses over time
 - **Delete entries** — Remove individual analyses from your history
@@ -19,8 +21,8 @@ A wellness-focused Streamlit app that analyzes poetry, journal entries, and pers
 # Install dependencies
 pip install -r requirements.txt
 
-# Set your Gemini API key (free — no credit card required)
-export GEMINI_API_KEY="your-gemini-api-key-here"
+# Set your Groq API key (free — no credit card required)
+export GROQ_API_KEY="your-groq-api-key-here"
 
 # Run the app
 streamlit run app.py
@@ -28,12 +30,12 @@ streamlit run app.py
 
 The app will open at `http://localhost:8501`.
 
-### Get a Free Gemini API Key
+### Get a Free Groq API Key
 
-1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
-2. Sign in with your Google account
+1. Go to [Groq Console](https://console.groq.com/keys)
+2. Sign up / sign in (no credit card required)
 3. Click "Create API Key"
-4. Copy the key — no credit card or billing required
+4. Copy the key — free tier includes 1,000 requests/day on Llama 3.3 70B
 
 ### Pre-seeded Account
 A default test account is created on first run:
@@ -47,7 +49,7 @@ A default test account is created on first run:
 3. **Connect your GitHub repo** and select `app.py` as the main file
 4. **Add your secret** — In the app settings, under "Secrets", add:
    ```toml
-   GEMINI_API_KEY = "your-gemini-api-key-here"
+   GROQ_API_KEY = "your-groq-api-key-here"
    ```
 5. **Deploy** — Click deploy and your app will be live in minutes
 
@@ -55,11 +57,11 @@ A default test account is created on first run:
 
 ```
 ├── app.py                  # Main Streamlit app (all pages)
-├── analysis.py             # Text analysis: word extraction + Google Gemini LLM call
+├── analysis.py             # Text analysis: word extraction + Groq LLM call
 ├── db.py                   # SQLite database layer (users + analyses)
 ├── requirements.txt        # Python dependencies
 ├── .streamlit/
-│   ├── config.toml         # Streamlit theme (sage green)
+│   ├── config.toml         # Streamlit theme (dark mode)
 │   └── secrets.toml.example # Template for API key
 ├── .gitignore
 └── README.md
@@ -69,15 +71,15 @@ A default test account is created on first run:
 
 1. Paste your writing (poetry, journal entry, etc.)
 2. The app extracts the top 20 meaningful words by frequency
-3. Google Gemini analyzes the text for emotions, diagnostic patterns, and quotes
+3. Groq (Llama 3.3 70B) analyzes the text for emotions, diagnostic patterns, political compass, MBTI profile, and quotes
 4. Results are displayed as interactive charts and saved to your history
 5. The history page shows cumulative trends across all your entries
 
 ## Tech Stack
 
 - **Streamlit** — UI framework
-- **Google Gemini** — AI text analysis (free tier, no credit card required)
-- **Plotly** — Interactive charts (radar, bar)
+- **Groq** — AI text analysis via Llama 3.3 70B (free tier, no credit card required)
+- **Plotly** — Interactive charts (radar, bar, scatter)
 - **WordCloud** — Word frequency visualization
 - **SQLite** — Local database for persistence
 

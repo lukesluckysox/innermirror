@@ -1,9 +1,9 @@
-"""Text analysis logic: word extraction + Google Gemini LLM call."""
+"""Text analysis logic: word extraction + Groq LLM call."""
 
 import json
 import re
 import os
-from google import genai
+from groq import Groq
 
 STOP_WORDS = {
     "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
@@ -42,8 +42,8 @@ def extract_word_frequencies(text: str, top_n: int = 20):
 
 
 def analyze_text(text: str, api_key: str):
-    """Call Google Gemini to analyze the writing. Returns parsed dict."""
-    client = genai.Client(api_key=api_key)
+    """Call Groq LLM to analyze the writing. Returns parsed dict."""
+    client = Groq(api_key=api_key)
     word_frequencies = extract_word_frequencies(text)
     top_words_str = ", ".join(w["word"] for w in word_frequencies[:30])
 
@@ -115,12 +115,14 @@ RULES:
 
 IMPORTANT: Return ONLY valid JSON. No markdown, no code fences, no explanation."""
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.6,
+        max_completion_tokens=4096,
     )
 
-    response_text = response.text if response.text else ""
+    response_text = response.choices[0].message.content if response.choices else ""
 
     # Strip markdown code fences if present
     cleaned = response_text.strip()

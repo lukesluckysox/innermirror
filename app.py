@@ -290,12 +290,12 @@ if "current_analysis" not in st.session_state:
 # ── Helper: get API key ──────────────────────────────
 
 def get_api_key():
-    """Get Google Gemini API key from secrets or env."""
+    """Get Groq API key from secrets or env."""
     try:
-        return st.secrets["GEMINI_API_KEY"]
+        return st.secrets["GROQ_API_KEY"]
     except Exception:
         import os
-        return os.environ.get("GEMINI_API_KEY", "")
+        return os.environ.get("GROQ_API_KEY", "")
 
 
 # ── Visualization helpers ─────────────────────────────
@@ -872,7 +872,7 @@ def page_home():
     if analyze_clicked:
         api_key = get_api_key()
         if not api_key:
-            st.error("No Gemini API key found. Please set GEMINI_API_KEY in your Streamlit secrets or environment variables. Get a free key at https://aistudio.google.com/apikey")
+            st.error("No Groq API key found. Please set GROQ_API_KEY in your Streamlit secrets or environment variables. Get a free key at https://console.groq.com/keys (no credit card required)")
             return
         if not text_input or len(text_input.strip()) < 10:
             st.warning("Please provide at least 10 characters of text.")
