@@ -92,6 +92,13 @@ Respond with this exact JSON structure:
     "sanctity": 0-100,
     "liberty": 0-100
   }},
+  "regulation_prompts": [
+    {{"prompt": "a writing prompt to help regulate the emotion", "target_emotion": "which emotion this addresses", "technique": "the therapeutic approach used"}}
+  ],
+  "recommended_reading": [
+    {{"title": "book or poem title", "author": "author name", "why": "one sentence on why this speaks to the writing's themes"}}
+  ],
+  "letter_to_self": "A short compassionate letter from the writer's wisest future self",
   "summary": "A compassionate 2-3 sentence summary of the emotional state reflected in this writing, referencing key words from the text"
 }}
 
@@ -127,6 +134,13 @@ RULES:
   - "sanctity": Purity, the sacred, spiritual themes, disgust. High if the text touches on spiritual elevation, contamination, body, or what feels deeply wrong.
   - "liberty": Freedom, autonomy, resistance to oppression or control. High if the text expresses feeling trapped, fighting for independence, or valuing self-determination.
   Calibrate carefully: 70-100 = dominant theme, 40-69 = clearly present, 10-39 = faint signal, 0-9 = absent.
+- regulation_prompts: Provide exactly 3 writing prompts designed to help the writer process and regulate the emotions detected. Each prompt should:
+  - Target a specific emotion from the analysis (especially the most intense or distressing ones)
+  - Use an evidence-based therapeutic technique: expressive writing, cognitive reframing, self-compassion, gratitude reorientation, narrative distancing, or emotion labeling
+  - Be warm, inviting, and specific to the themes in THIS text (not generic)
+  - Include "target_emotion" (which emotion it addresses) and "technique" (which approach it uses)
+- recommended_reading: Suggest exactly 3 specific books, poems, or essays that speak to the emotional themes in the writing. Choose works that would genuinely help someone feeling what this writer is feeling. Include a one-sentence "why" that connects the recommendation to the specific themes detected. Prefer well-known, accessible works.
+- letter_to_self: Write a 3-4 sentence compassionate letter as if from the writer's wisest, most loving future self, speaking directly to the pain or themes in the writing. Use "you" to address the writer. Reference specific words or images from the text. This should feel like a warm hug in words — not clinical, not preachy, just deeply understanding.
 - summary: Write a warm, empathetic summary that references the most frequent words and what they reveal emotionally.
 
 IMPORTANT: Return ONLY valid JSON. No markdown, no code fences, no explanation."""
@@ -135,7 +149,7 @@ IMPORTANT: Return ONLY valid JSON. No markdown, no code fences, no explanation."
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.6,
-        max_completion_tokens=4096,
+        max_completion_tokens=6000,
     )
 
     response_text = response.choices[0].message.content if response.choices else ""

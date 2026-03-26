@@ -1040,6 +1040,59 @@ def page_home():
         st.markdown("**Words for Reflection**")
         render_quotes(analysis.get("quotes", []))
 
+        # ── Actionable sections (home page only) ──────────
+
+        # Letter to Self
+        letter = analysis.get("letter_to_self", "")
+        if letter:
+            st.markdown("**✉️ Letter from Your Future Self**")
+            st.caption("A compassionate message from the wisest version of you, written to the you who wrote this.")
+            st.markdown(f"""
+            <div style="background:rgba(111,207,151,0.08); border-left:3px solid #6fcf97;
+                        padding:1rem 1.2rem; border-radius:0 8px 8px 0; margin:0.5rem 0 1.5rem 0;
+                        color:#d4d4d4; font-style:italic; line-height:1.7;">
+                {letter}
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Regulation Prompts
+        reg_prompts = analysis.get("regulation_prompts", [])
+        if reg_prompts:
+            st.markdown("**✍️ Regulation Prompts**")
+            st.caption("Writing exercises designed to help you process the emotions in this entry.")
+            for i, rp in enumerate(reg_prompts):
+                emotion_tag = rp.get("target_emotion", "")
+                technique_tag = rp.get("technique", "")
+                badges = ""
+                if emotion_tag:
+                    badges += f'<span style="display:inline-block; background:rgba(111,207,151,0.15); color:#6fcf97; padding:2px 8px; border-radius:12px; font-size:0.75rem; margin-right:6px;">{emotion_tag}</span>'
+                if technique_tag:
+                    badges += f'<span style="display:inline-block; background:rgba(155,81,224,0.15); color:#bb86fc; padding:2px 8px; border-radius:12px; font-size:0.75rem;">{technique_tag}</span>'
+                st.markdown(f"""
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+                            padding:1rem 1.2rem; border-radius:8px; margin:0.5rem 0;">
+                    <div style="margin-bottom:0.5rem;">{badges}</div>
+                    <div style="color:#e0e0e0; line-height:1.6;">{rp.get('prompt', '')}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # Recommended Reading
+        reading = analysis.get("recommended_reading", [])
+        if reading:
+            st.markdown("**📚 Recommended Reading**")
+            st.caption("Books, poems, and essays that speak to the themes in your writing.")
+            rcols = st.columns(len(reading)) if len(reading) > 1 else [st.columns(1)[0]]
+            for idx, item in enumerate(reading):
+                with rcols[idx] if idx < len(rcols) else rcols[-1]:
+                    st.markdown(f"""
+                    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+                                padding:1rem; border-radius:8px; height:100%;">
+                        <div style="color:#6fcf97; font-weight:600; margin-bottom:4px;">{item.get('title', '')}</div>
+                        <div style="color:#aaa; font-size:0.85rem; margin-bottom:8px;">by {item.get('author', '')}</div>
+                        <div style="color:#d4d4d4; font-size:0.9rem; line-height:1.5;">{item.get('why', '')}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
     elif not analyze_clicked:
         st.markdown("""
         <div style="text-align:center; padding:3rem 1rem; color:#888;">
