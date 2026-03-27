@@ -31,56 +31,157 @@ EMOTION_WORD_MAP = {
         "die", "dead", "end", "fall", "fallen", "despair", "hopeless",
         "misery", "suffer", "agony", "melancholy", "gloom", "somber",
         "heavy", "burden", "weight", "chains", "cage", "cages", "trap",
-        "prison", "bound", "blindness", "blind",
+        "prison", "bound", "blindness", "blind", "regret", "sigh",
+        "numb", "void", "absence", "departed", "ruins", "decay",
+        "crumble", "shatter", "wilt", "fading", "dimming", "weary",
+        "exhausted", "tired", "drained", "defeated", "collapse",
+        "abandoned", "forsaken", "forgotten", "neglected", "reject",
+        "rejected", "unwanted", "worthless", "helpless", "powerless",
+        "mourning", "funeral", "burial", "tomb", "coffin", "ash",
+        "ashes", "dust", "remnants", "debris", "wreckage",
+        "tear", "crying", "sobbing", "wept", "lament", "dirge",
+        "desolate", "desolation", "barren", "wasteland", "bleak",
     ]},
     "anger": {"color": "#EB5757", "words": [
         "anger", "angry", "rage", "fury", "hate", "hatred", "fight",
         "war", "destroy", "burn", "fire", "blood", "kill", "violent",
         "scream", "shout", "curse", "bitter", "resent", "spite",
         "disgust", "revolt", "rebel", "defy", "crush", "smash",
-        "frustration", "frustrated", "injustice",
+        "frustration", "frustrated", "injustice", "betray", "betrayal",
+        "vengeance", "revenge", "wrath", "hostile", "venom", "poison",
+        "toxic", "explode", "erupt", "seethe", "boil", "fume",
+        "storm", "thunder", "strike", "attack", "assault", "weapon",
+        "blade", "knife", "sword", "bullet", "wound", "bruise",
+        "clench", "fist", "slam", "punch", "kick", "stomp",
+        "furious", "livid", "outrage", "outraged", "indignant",
+        "contempt", "scorn", "mock", "ridicule", "taunt",
+        "oppression", "tyranny", "corrupt", "exploitation",
+        "bully", "abuse", "abused", "violated", "silenced",
     ]},
     "fear": {"color": "#9B51E0", "words": [
         "fear", "afraid", "scared", "terror", "dread", "panic",
         "anxiety", "anxious", "worry", "nervous", "threat", "danger",
-        "risk", "hide", "flee", "run", "escape", "trapped", "haunted",
+        "risk", "hide", "flee", "escape", "trapped", "haunted",
         "ghost", "nightmare", "horror", "phobia", "paralyzed",
-        "obligations", "expectations",
+        "obligations", "expectations", "creep", "lurk", "stalk",
+        "shadow", "unknown", "uncertain", "doubt", "suspect",
+        "paranoid", "paranoia", "vigilant", "alert", "tense",
+        "trembling", "shaking", "shiver", "sweat", "freeze",
+        "frozen", "petrified", "terrified", "horrified", "aghast",
+        "startled", "shock", "gasp", "scream", "shriek",
+        "doom", "foreboding", "omen", "curse", "hex",
+        "abyss", "chasm", "void", "bottomless", "plunge",
+        "spinning", "dizzy", "vertigo", "falling", "drowning",
+        "suffocate", "choke", "strangled", "cornered", "hunted",
+        "vulnerable", "exposed", "defenseless", "fragile",
     ]},
     "joy": {"color": "#F2C94C", "words": [
-        "joy", "happy", "happiness", "love", "laugh", "smile", "play",
+        "joy", "happy", "happiness", "laugh", "smile", "play",
         "dance", "sing", "celebrate", "bright", "light", "sun", "warm",
         "bloom", "flower", "spring", "free", "freedom", "peace",
         "bliss", "delight", "pleasure", "wonder", "magic", "dream",
         "hope", "wish", "stars", "beautiful", "beauty", "gentle",
         "kind", "sweet", "tender", "embrace", "hold", "home",
-        "celebration", "innovation",
+        "celebration", "innovation", "grateful", "gratitude", "thankful",
+        "blessing", "blessed", "gift", "treasure", "radiant", "glow",
+        "glowing", "shine", "shining", "sparkle", "golden", "sunrise",
+        "dawn", "morning", "alive", "vibrant", "energy", "thrive",
+        "flourish", "blossom", "grow", "growth", "garden", "harvest",
+        "abundance", "plenty", "rich", "full", "content", "satisfy",
+        "triumph", "victory", "achieve", "success", "proud", "pride",
+        "excitement", "excited", "thrill", "adventure", "discover",
+        "inspire", "inspired", "create", "creation", "art",
+        "laughter", "giggle", "cheer", "fun", "playful", "silly",
+        "euphoria", "ecstasy", "elation", "jubilant", "exuberant",
     ]},
     "love": {"color": "#E84393", "words": [
         "love", "heart", "soul", "beloved", "darling", "dear",
         "passion", "desire", "romance", "kiss", "touch", "caress",
         "intimate", "devotion", "adore", "cherish", "bond",
-        "together", "forever", "connect", "connection",
+        "together", "forever", "connect", "connection", "affection",
+        "warmth", "caring", "compassion", "empathy", "sympathy",
+        "trust", "faithful", "loyal", "commit", "promise", "vow",
+        "wedding", "marriage", "partner", "companion", "soulmate",
+        "mother", "father", "child", "children", "family", "brother",
+        "sister", "daughter", "son", "baby", "infant", "parent",
+        "hug", "cuddle", "snuggle", "nestle", "cradle", "protect",
+        "shelter", "safe", "safety", "comfort", "belonging",
+        "yearn", "longing", "ache", "miss", "pine", "crave",
+        "tender", "gentle", "soft", "whisper", "murmur",
     ]},
-    "contemplation": {"color": "#52796f", "words": [
-        "think", "thought", "mind", "wonder", "question", "truth",
+    "contemplation": {"color": "#20B2AA", "words": [
+        "thought", "mind", "wonder", "question", "truth",
         "wisdom", "intuition", "knowledge", "understand", "meaning",
-        "purpose", "exist", "existence", "life", "time", "memory",
+        "purpose", "exist", "existence", "memory",
         "remember", "forget", "past", "future", "present", "eternity",
         "infinite", "universe", "nature", "earth", "sky", "sea",
-        "ocean", "river", "mountain", "vision", "society", "world",
-        "living", "another", "eye", "status", "wages", "rapid",
+        "ocean", "river", "mountain", "vision", "society",
+        "reflect", "reflection", "contemplate", "ponder", "meditate",
+        "philosophy", "consciousness", "awareness", "perceive",
+        "perspective", "lens", "mirror", "illusion", "reality",
+        "identity", "self", "ego", "essence", "spirit",
+        "journey", "path", "road", "crossroads", "choice",
+        "destiny", "fate", "karma", "cycle", "pattern",
+        "silence", "stillness", "quiet", "calm", "serene",
+        "depth", "deep", "beneath", "surface", "hidden",
+        "mystery", "enigma", "paradox", "contradiction",
+        "transform", "evolve", "change", "shift", "transition",
+    ]},
+    "shame": {"color": "#E07C4F", "words": [
+        "shame", "ashamed", "guilt", "guilty", "blame", "fault",
+        "wrong", "mistake", "failure", "failed", "inadequate",
+        "unworthy", "pathetic", "weak", "coward", "selfish",
+        "regret", "sorry", "apologize", "forgive", "forgiveness",
+        "secret", "hiding", "mask", "pretend", "fake", "fraud",
+        "impostor", "exposed", "naked", "vulnerable", "judged",
+        "embarrass", "embarrassed", "humiliate", "humiliation",
+        "disgrace", "dishonor", "tarnish", "stain", "dirty",
+    ]},
+    "hope": {"color": "#00B894", "words": [
+        "hope", "hopeful", "faith", "believe", "trust", "optimism",
+        "tomorrow", "someday", "promise", "possible", "potential",
+        "resilience", "resilient", "strength", "strong", "endure",
+        "survive", "survivor", "overcome", "rise", "rising",
+        "rebuild", "renew", "restore", "heal", "healing",
+        "recover", "recovery", "mend", "repair", "stitch",
+        "seed", "plant", "root", "sprout", "sapling",
+        "horizon", "dawn", "daybreak", "sunrise", "clearing",
+        "breakthrough", "progress", "forward", "onward", "ahead",
+        "courage", "brave", "bravery", "bold", "determined",
+        "persist", "persevere", "steadfast", "unwavering",
     ]},
 }
 
+# Build a flat lookup for fast matching
+_WORD_COLOR_LOOKUP = {}
+for _emo, _data in EMOTION_WORD_MAP.items():
+    for _w in _data["words"]:
+        _WORD_COLOR_LOOKUP[_w] = _data["color"]
+
+# Common suffixes to try stripping for fuzzy matching
+_SUFFIXES = ["ing", "tion", "ness", "ment", "ful", "less", "ed", "ly", "er", "est", "ous", "ive", "al", "en", "ity", "ence", "ance", "able", "ible", "ism"]
+
 def get_emotion_color(word):
-    """Return an emotion-based color for a word, or a neutral default."""
-    w = word.lower()
-    for emotion, data in EMOTION_WORD_MAP.items():
-        if w in data["words"]:
-            return data["color"]
-    # Neutral default — muted teal
-    return "#6b8f7e"
+    """Return an emotion-based color for a word using exact + fuzzy matching."""
+    w = word.lower().strip()
+    # Exact match
+    if w in _WORD_COLOR_LOOKUP:
+        return _WORD_COLOR_LOOKUP[w]
+    # Try stripping common suffixes to find the root
+    for suffix in _SUFFIXES:
+        if w.endswith(suffix) and len(w) > len(suffix) + 2:
+            root = w[:-len(suffix)]
+            if root in _WORD_COLOR_LOOKUP:
+                return _WORD_COLOR_LOOKUP[root]
+            # Try root + 'e' (e.g. 'hoping' -> 'hop' -> try 'hope')
+            if root + "e" in _WORD_COLOR_LOOKUP:
+                return _WORD_COLOR_LOOKUP[root + "e"]
+    # Check if the word contains any known emotion word as a substring
+    for known_word, color in _WORD_COLOR_LOOKUP.items():
+        if len(known_word) >= 4 and known_word in w:
+            return color
+    # Default — soft white-gray (clearly distinct from all emotion colors)
+    return "#8a9a9a"
 
 # ── Page config ───────────────────────────────────────
 
@@ -300,17 +401,32 @@ def get_api_key():
 
 # ── Visualization helpers ─────────────────────────────
 
-def _emotion_color_func(word, **kwargs):
-    """Color function for WordCloud — maps words to emotion colors."""
-    return get_emotion_color(word)
+def _make_color_func(llm_word_colors=None):
+    """Create a color function for WordCloud.
+    If llm_word_colors is provided (from LLM contextual analysis),
+    use those first, then fall back to static dictionary."""
+    def color_func(word, **kwargs):
+        w = word.lower().strip()
+        # Use LLM-assigned contextual color if available
+        if llm_word_colors:
+            if w in llm_word_colors:
+                return llm_word_colors[w].get("color", get_emotion_color(w))
+            # Try without trailing 's' for plurals
+            if w.endswith("s") and w[:-1] in llm_word_colors:
+                return llm_word_colors[w[:-1]].get("color", get_emotion_color(w))
+        # Fall back to static dictionary
+        return get_emotion_color(w)
+    return color_func
 
 
-def render_word_cloud(word_freqs, height=220):
-    """Render an emotion-color-coded word cloud from [{word, count}, ...] list."""
+def render_word_cloud(word_freqs, height=220, word_colors=None):
+    """Render an emotion-color-coded word cloud from [{word, count}, ...] list.
+    word_colors: optional dict from LLM with contextual color assignments."""
     if not word_freqs:
         st.info("No words to display.")
         return
     freq_dict = {w["word"]: w["count"] for w in word_freqs[:20]}
+    color_func = _make_color_func(word_colors)
     wc = WordCloud(
         width=700,
         height=height,
@@ -318,10 +434,10 @@ def render_word_cloud(word_freqs, height=220):
         mode="RGBA",
         max_words=20,
         prefer_horizontal=0.7,
-        min_font_size=12,
-        max_font_size=64,
-        relative_scaling=0.5,
-        color_func=_emotion_color_func,
+        min_font_size=10,
+        max_font_size=72,
+        relative_scaling=0.8,
+        color_func=color_func,
     ).generate_from_frequencies(freq_dict)
     fig, ax = plt.subplots(figsize=(7, height / 100))
     ax.imshow(wc, interpolation="bilinear")
@@ -642,13 +758,37 @@ def render_moral_foundations(mf_data, chart_key=None):
 # ── Cumulative helpers ────────────────────────────────
 
 def compute_cumulative_words(entries):
-    aggregated = {}
+    """Compute cumulative word frequencies weighted by cross-entry recurrence.
+    Words that appear across many entries are boosted — persistent themes
+    surface larger than words that only appear in one verbose entry.
+    """
+    # Track total count AND how many distinct entries each word appears in
+    total_count = {}
+    entry_count = {}
     for entry in entries:
+        seen_in_entry = set()
         for wf in entry["word_frequencies"]:
             w = wf["word"]
             if w not in STOP_WORDS:
-                aggregated[w] = aggregated.get(w, 0) + wf["count"]
-    sorted_words = sorted(aggregated.items(), key=lambda x: x[1], reverse=True)[:20]
+                total_count[w] = total_count.get(w, 0) + wf["count"]
+                seen_in_entry.add(w)
+        for w in seen_in_entry:
+            entry_count[w] = entry_count.get(w, 0) + 1
+
+    n = len(entries)
+    if n == 0:
+        return []
+
+    # Score = raw frequency * recurrence boost
+    # recurrence_boost = (entries_appeared_in / total_entries) ^ 0.5
+    # A word in 1/10 entries gets ~0.32x, in 5/10 gets ~0.71x, in 10/10 gets 1.0x
+    scored = {}
+    for w in total_count:
+        recurrence_ratio = entry_count[w] / n
+        boost = recurrence_ratio ** 0.5
+        scored[w] = round(total_count[w] * boost)
+
+    sorted_words = sorted(scored.items(), key=lambda x: x[1], reverse=True)[:20]
     return [{"word": w, "count": c} for w, c in sorted_words]
 
 
@@ -972,6 +1112,7 @@ def page_home():
                         political_compass=result.get("political_compass"),
                         mbti_profile=result.get("mbti_profile"),
                         moral_foundations=result.get("moral_foundations"),
+                        word_colors=result.get("word_colors"),
                     )
                     result["id"] = aid
 
@@ -997,7 +1138,7 @@ def page_home():
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("**Word Cloud**")
-            render_word_cloud(analysis["wordFrequencies"])
+            render_word_cloud(analysis["wordFrequencies"], word_colors=analysis.get("word_colors"))
         with col2:
             st.markdown("**Emotional Landscape**")
             render_emotion_radar(analysis["emotions"], chart_key="home_emotion_radar")
@@ -1040,7 +1181,40 @@ def page_home():
         st.markdown("**Words for Reflection**")
         render_quotes(analysis.get("quotes", []))
 
-        # ── Actionable sections (home page only) ──────────
+        # ── Deeper insight sections (home page only) ─────
+
+        # Metaphor Detection
+        metaphors = analysis.get("metaphors", [])
+        if metaphors:
+            st.markdown("**🔮 Metaphor Detection**")
+            st.caption("The symbolic images in your writing — where your subconscious speaks most honestly.")
+            for m in metaphors:
+                quote_html = f'<span style="color:#6fcf97; font-style:italic;">"…{m.get("quote", "")}…"</span>' if m.get("quote") else ""
+                st.markdown(f"""
+                <div style="background:rgba(155,81,224,0.06); border-left:3px solid #9B51E0;
+                            padding:1rem 1.2rem; border-radius:0 8px 8px 0; margin:0.5rem 0;">
+                    <div style="color:#bb86fc; font-weight:600; font-size:1rem; margin-bottom:6px;">{m.get('image', '')}</div>
+                    <div style="margin-bottom:8px;">{quote_html}</div>
+                    <div style="color:#d4d4d4; line-height:1.6;">{m.get('interpretation', '')}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # Unspoken Emotions
+        unspoken = analysis.get("unspoken_emotions", [])
+        if unspoken:
+            st.markdown("**🫥 The Unspoken**")
+            st.caption("What your writing doesn't say can be just as revealing as what it does.")
+            for u in unspoken:
+                st.markdown(f"""
+                <div style="background:rgba(232,67,147,0.06); border-left:3px solid #E84393;
+                            padding:1rem 1.2rem; border-radius:0 8px 8px 0; margin:0.5rem 0;">
+                    <div style="color:#E84393; font-weight:600; font-size:1rem; margin-bottom:6px;">Missing: {u.get('emotion', '')}</div>
+                    <div style="color:#aaa; font-size:0.9rem; margin-bottom:8px;">Expected because: {u.get('expected_because', '')}</div>
+                    <div style="color:#d4d4d4; line-height:1.6;">{u.get('interpretation', '')}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # ── Therapeutic response sections ────────────────
 
         # Letter to Self
         letter = analysis.get("letter_to_self", "")
@@ -1328,7 +1502,7 @@ def page_history():
             dcol1, dcol2 = st.columns(2)
             with dcol1:
                 st.markdown("**Word Cloud**")
-                render_word_cloud(entry["word_frequencies"], height=220)
+                render_word_cloud(entry["word_frequencies"], height=220, word_colors=entry.get("word_colors"))
             with dcol2:
                 st.markdown("**Emotional Landscape**")
                 render_emotion_radar(entry["emotions"], chart_key=f"entry_{entry['id']}_emotion")
